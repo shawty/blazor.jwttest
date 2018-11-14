@@ -1,0 +1,88 @@
+﻿@using blazor.jwttest.Shared
+@using blazor.jwttest.Client.Classes
+@inject ApplicationState AppState
+
+<div class="container h-100">
+
+  <br /><br />
+
+  @if (UserInfo == null)
+  {
+    <p><em>@LoadingMessage</em></p>
+  }
+  else
+  {
+    <h5>Editing User <span class="text-info">(ID=@UserInfo.Id)</span></h5>
+    <br />
+
+    <form>
+
+      <div class="form-group">
+        <label for="userid" class="control-label">ID</label>
+        <input id="userid" class="form-control" bind="@UserInfo.Id" readonly=@MakeIdReadOnly />
+      </div>
+
+      <div class="form-group">
+        <label for="loginname" class="control-label">Login Name</label>
+        <input id="loginname" class="form-control" bind="@UserInfo.LoginName" />
+      </div>
+
+      <div class="form-group">
+        <label for="fullname" class="control-label">Full Name</label>
+        <input id="fullname" class="form-control" bind="@UserInfo.FullName" />
+      </div>
+
+      <div class="form-group">
+        <label for="email" class="control-label">Email Address</label>
+        <input id="email" class="form-control" bind="@UserInfo.Email" />
+      </div>
+
+      <div class="form-group">
+        <label for="password" class="control-label">Password</label>
+        <input id="password" class="form-control" bind="@UserInfo.Password" />
+      </div>
+
+      <div class="form-group">
+        <input type="button" value="Save" onclick="@SaveButtonClicked" class="btn btn-success" />
+        <input type="button" value="Cancel" onclick="@CancelButtonClicked" class="btn btn-danger" />
+      </div>
+
+    </form>
+  }
+
+</div>
+
+
+@functions {
+
+  //TODO: Add some kind of validation service
+
+  [Parameter]
+  private User UserInfo { get; set; }
+
+  [Parameter]
+  private string LoadingMessage { get; set; }
+
+  [Parameter]
+  private bool MakeIdReadOnly { get; set; }
+
+  [Parameter]
+  private Action OnSaveClicked { get; set; }
+
+  [Parameter]
+  private Action OnCancelClicked { get; set; }
+
+  public User UserData { get; private set; }
+
+  private void SaveButtonClicked()
+  {
+    UserData = UserInfo;
+    OnSaveClicked?.Invoke();
+  }
+
+  private void CancelButtonClicked()
+  {
+    OnCancelClicked?.Invoke();
+  }
+
+}

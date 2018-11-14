@@ -1,0 +1,34 @@
+﻿@using Microsoft.AspNetCore.Blazor.Services
+@using blazor.jwttest.Shared
+@page "/edit/user/{userId}"
+@inject HttpClient Http
+@inject IUriHelper UriHelper
+
+<UserForm ref="userForm" LoadingMessage="Loading User, please wait..." MakeIdReadOnly="true" UserInfo="@loadedUser" OnSaveClicked="@SaveClicked" OnCancelClicked="@CancelClicked"></UserForm>
+
+@functions {
+
+  [Parameter]
+  string UserId { get; set; }
+
+  private User loadedUser;
+  UserForm userForm;
+
+  protected override async Task OnInitAsync()
+  {
+    loadedUser = await Http.GetJsonAsync<User>($"api/users/retrieve/{UserId}");
+  }
+
+  private async void SaveClicked()
+  {
+    await Http.SendJsonAsync<User>(HttpMethod.Post, "api/users/update", userForm.UserData);
+    UriHelper.NavigateTo("edit/users");
+  }
+
+  private void CancelClicked()
+  {
+    UriHelper.NavigateTo("/edit/users");
+  }
+
+}
+

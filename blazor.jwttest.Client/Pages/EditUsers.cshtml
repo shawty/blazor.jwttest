@@ -10,12 +10,13 @@
 }
 else
 {
+  <td><a href="/add/user" class="btn btn-success">Add New User</a></td><br/>
   <table class="table">
     <thead>
       <tr>
         <th>#</th>
-        <th>Title</th>
-        <th>Done</th>
+        <th>Name</th>
+        <th>&nbsp;</th>
       </tr>
     </thead>
     <tbody>
@@ -24,7 +25,7 @@ else
         <tr>
           <td>@user.Id</td>
           <td>@user.LoginName</td>
-          <td>@user.Email</td>
+          <td><a href="/edit/user/@user.Id" class="btn btn-sm btn-primary">Edit User</a></td>
         </tr>
       }
     </tbody>
@@ -33,12 +34,12 @@ else
 
 @functions {
 
-  User[] users;
+User[] users;
 
-  protected override async Task OnInitAsync()
-  {
-    users = await Http.GetJsonAsync<User[]>("api/users/all");
-  }
+protected override async Task OnInitAsync()
+{
+  users = await Http.GetJsonAsync<User[]>("api/users/all");
+}
 
 }
 

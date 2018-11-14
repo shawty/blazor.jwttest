@@ -38,7 +38,7 @@ namespace blazor.jwttest.Server.Controllers
       return Ok(newTodo);
     }
 
-    [HttpGet("[action]/{mapId:int}")]
+    [HttpGet("[action]/{todoId:int}")]
     public IActionResult Retrieve(int todoId)
     {
       try

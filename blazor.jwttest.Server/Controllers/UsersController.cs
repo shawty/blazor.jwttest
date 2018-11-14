@@ -38,7 +38,7 @@ namespace blazor.jwttest.Server.Controllers
       return Ok(newUser);
     }
 
-    [HttpGet("[action]/{mapId:int}")]
+    [HttpGet("[action]/{userId:int}")]
     public IActionResult Retrieve(int userId)
     {
       try
