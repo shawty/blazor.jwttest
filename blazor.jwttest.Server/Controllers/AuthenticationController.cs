@@ -37,6 +37,9 @@ namespace gisportal.Server.Controllers
       }
       catch (UserNotValidatedException)
       {
+        // NOTE: If you want to check the exception at this point, there's a validation reason on it that tells you
+        // what actually failed, however it's generally good practice not to tell that info to the UI as it gives
+        // anyone trying to gain access maliciously and idea of what's right and what's not :-)
         return BadRequest("Username and password are invalid.");
       }
 

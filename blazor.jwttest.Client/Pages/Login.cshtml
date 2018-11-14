@@ -1,0 +1,57 @@
+﻿@using Microsoft.AspNetCore.Blazor.Services
+@using blazor.jwttest.Client.Classes
+@using blazor.jwttest.Shared
+
+@inject IUriHelper UriHelper
+@inject ApplicationState  _appState
+
+@page "/login"
+
+<div class="container">
+
+  <div class="row pt-4 pb-4">
+    <div class="col-md-8 offset-md-2">
+      <h2 class="text-center">Please enter your user name and password</h2>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="col-md-4 offset-md-4">
+      <div class="editor">
+        @if (ShowLoginFailed)
+        {
+        <div class="alert alert-danger pt-4 pb-4">
+          Login attempt failed.
+        </div>
+        }
+
+        <input type="text" bind=@LoginDetails.Username placeholder="Username" class="form-control mb-2" />
+        <input type="password" bind=@LoginDetails.Password placeholder="Password" class="form-control mb-2" />
+        <button class="btn btn-primary" onclick="@LoginToApplication">Login</button>
+
+      </div>
+    </div>
+  </div>
+
+</div>
+
+@functions {
+
+protected LoginDetails LoginDetails { get; set; } = new LoginDetails();
+protected bool ShowLoginFailed { get; set; }
+
+protected async Task LoginToApplication()
+{
+  await _appState.Login(LoginDetails);
+
+  if (_appState.IsLoggedIn)
+  {
+    UriHelper.NavigateTo("/");
+  }
+  else
+  {
+    ShowLoginFailed = true;
+  }
+}
+
+}

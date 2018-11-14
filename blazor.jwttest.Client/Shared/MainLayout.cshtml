@@ -1,15 +1,35 @@
 ﻿@inherits BlazorLayoutComponent
+@using blazor.jwttest.Client.Classes
+@inject ApplicationState AppState
 
 <div class="sidebar">
-    <NavMenu />
+  <NavMenu />
 </div>
 
 <div class="main">
-    <div class="top-row px-4">
-        <a href="http://blazor.net" target="_blank" class="ml-md-auto">About</a>
-    </div>
+  <div class="top-row px-4">
+    @if (AppState.IsLoggedIn)
+    {
+      <p class="m-0 p-2 ml-auto mr-2"><a class="text-light" href="/edit/todos/">Edit Todos</a></p>
+      <p class="m-0 p-2 ml-auto mr-2"><a class="text-light" href="/edit/users/">Edit Users</a></p>
+      <p class="m-0 p-2 mr-2"><a class="text-light" href="" onclick="@Logout">Logout</a></p>
+    }
+    else
+    {
+      <p class="m-0 p-2 ml-auto mr-2"><a class="text-light" href="/login">Login</a></p>
+    }
+  </div>
 
-    <div class="content px-4">
-        @Body
-    </div>
+  <div class="content px-4">
+    @Body
+  </div>
 </div>
+
+@functions {
+
+protected async Task Logout()
+{
+  await AppState.Logout();
+}
+
+}
