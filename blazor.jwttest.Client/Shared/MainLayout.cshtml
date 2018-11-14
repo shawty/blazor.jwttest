@@ -10,7 +10,7 @@
   <div class="top-row px-4">
     @if (AppState.IsLoggedIn)
     {
-      <p class="m-0 p-2 mr-2"><a class="text-primary" href="" onclick="@Logout">Logout</a></p>
+      <p class="m-0 p-2 ml-auto mr-2"><span class="text-info">Logged in as @AppState.UserName</span>&nbsp;&nbsp;<a class="text-primary" href="" onclick="@Logout">Logout</a></p>
     }
     else
     {

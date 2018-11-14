@@ -1,0 +1,44 @@
+﻿@using blazor.jwttest.Shared
+@page "/edit/todos"
+@inject HttpClient Http
+
+<h1>Edit Todo's</h1>
+
+@if (todos == null)
+{
+  <p><em>Loading list...</em></p>
+}
+else
+{
+  <table class="table">
+    <thead>
+      <tr>
+        <th>#</th>
+        <th>Title</th>
+        <th>Done</th>
+      </tr>
+    </thead>
+    <tbody>
+      @foreach (var todo in todos)
+      {
+        <tr>
+          <td>@todo.Id</td>
+          <td>@todo.Title</td>
+          <td>@todo.Done</td>
+        </tr>
+      }
+    </tbody>
+  </table>
+}
+
+@functions {
+
+  Todo[] todos;
+
+  protected override async Task OnInitAsync()
+  {
+    todos = await Http.GetJsonAsync<Todo[]>("api/todos/all");
+  }
+
+}
+

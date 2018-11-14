@@ -1,0 +1,44 @@
+﻿@using blazor.jwttest.Shared
+@page "/edit/users"
+@inject HttpClient Http
+
+<h1>Edit Users's</h1>
+
+@if (users == null)
+{
+  <p><em>Loading list...</em></p>
+}
+else
+{
+  <table class="table">
+    <thead>
+      <tr>
+        <th>#</th>
+        <th>Title</th>
+        <th>Done</th>
+      </tr>
+    </thead>
+    <tbody>
+      @foreach (var user in users)
+      {
+        <tr>
+          <td>@user.Id</td>
+          <td>@user.LoginName</td>
+          <td>@user.Email</td>
+        </tr>
+      }
+    </tbody>
+  </table>
+}
+
+@functions {
+
+  User[] users;
+
+  protected override async Task OnInitAsync()
+  {
+    users = await Http.GetJsonAsync<User[]>("api/users/all");
+  }
+
+}
+

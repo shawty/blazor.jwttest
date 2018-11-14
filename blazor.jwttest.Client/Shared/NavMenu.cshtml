@@ -18,13 +18,13 @@
     @if (AppState.IsLoggedIn)
     {
       <li class="nav-item px-3">
-        <NavLink class="nav-link" href="counter">
-          <span class="oi oi-plus" aria-hidden="true"></span> Counter
+        <NavLink class="nav-link" href="edit/todos">
+          <span class="oi oi-list-rich" aria-hidden="true"></span> Edit Todos
         </NavLink>
       </li>
     <li class="nav-item px-3">
-      <NavLink class="nav-link" href="fetchdata">
-        <span class="oi oi-list-rich" aria-hidden="true"></span> Fetch data
+      <NavLink class="nav-link" href="edit/users">
+        <span class="oi oi-person" aria-hidden="true"></span> Edit Users
       </NavLink>
     </li>
     }
@@ -32,10 +32,24 @@
 </div>
 
 @functions {
-bool collapseNavMenu = true;
 
-void ToggleNavMenu()
-{
-  collapseNavMenu = !collapseNavMenu;
-}
+  bool collapseNavMenu = true;
+
+  protected override void OnInit()
+  {
+    AppState.LoginSucceeded += UpdateState;
+    AppState.LogoutSucceeded += UpdateState;
+    base.OnInit();
+  }
+
+  void ToggleNavMenu()
+  {
+    collapseNavMenu = !collapseNavMenu;
+  }
+
+  private void UpdateState(object sender, string unused)
+  {
+    StateHasChanged();
+  }
+
 }

@@ -18,6 +18,9 @@ namespace blazor.jwttest.Client.Classes
 
     private const string AuthTokenName = "authToken";
 
+    public event EventHandler<string> LoginSucceeded;
+    public event EventHandler<string> LogoutSucceeded;
+
     public bool IsLoggedIn { get; private set; }
     public string UserName { get; private set; }
     public string FullName { get; private set; }
@@ -56,6 +59,9 @@ namespace blazor.jwttest.Client.Classes
         UserRoles = _jwtDecoder.GetRoles();
 
         IsLoggedIn = true;
+
+        LoginSucceeded?.Invoke(this, null);
+
       }
     }
 
@@ -67,6 +73,7 @@ namespace blazor.jwttest.Client.Classes
       UserName = FullName = Email = String.Empty;
       UserRoles.Clear();
 
+      LogoutSucceeded?.Invoke(this, null);
     }
 
     private async Task SaveToken(HttpResponseMessage response)
