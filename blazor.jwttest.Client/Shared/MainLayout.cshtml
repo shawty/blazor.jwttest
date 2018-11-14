@@ -10,13 +10,11 @@
   <div class="top-row px-4">
     @if (AppState.IsLoggedIn)
     {
-      <p class="m-0 p-2 ml-auto mr-2"><a class="text-light" href="/edit/todos/">Edit Todos</a></p>
-      <p class="m-0 p-2 ml-auto mr-2"><a class="text-light" href="/edit/users/">Edit Users</a></p>
-      <p class="m-0 p-2 mr-2"><a class="text-light" href="" onclick="@Logout">Logout</a></p>
+      <p class="m-0 p-2 mr-2"><a class="text-primary" href="" onclick="@Logout">Logout</a></p>
     }
     else
     {
-      <p class="m-0 p-2 ml-auto mr-2"><a class="text-light" href="/login">Login</a></p>
+      <p class="m-0 p-2 ml-auto mr-2"><a class="text-primary" href="/login">Login</a></p>
     }
   </div>
 
