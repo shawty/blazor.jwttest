@@ -99,6 +99,7 @@ namespace blazor.jwttest.Server.Services
       dbT entityToAdd = newEntity.Adapt<dbT>();
 
       entityToAdd.DateCreated = DateTime.UtcNow;
+
       _db.Set<dbT>().Add(entityToAdd);
       _db.SaveChanges();
 

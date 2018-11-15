@@ -12,15 +12,10 @@
   }
   else
   {
-    <h5>Editing User <span class="text-info">(ID=@UserInfo.Id)</span></h5>
+    <h5>Editing User <span class="text-info">[@UserInfo.LoginName]</span></h5>
     <br />
 
     <form>
-
-      <div class="form-group">
-        <label for="userid" class="control-label">ID</label>
-        <input id="userid" class="form-control" bind="@UserInfo.Id" readonly=@MakeIdReadOnly />
-      </div>
 
       <div class="form-group">
         <label for="loginname" class="control-label">Login Name</label>
@@ -39,7 +34,12 @@
 
       <div class="form-group">
         <label for="password" class="control-label">Password</label>
-        <input id="password" class="form-control" bind="@UserInfo.Password" />
+        <input type="password" id="password" class="form-control" bind="@UserInfo.Password" placeholder="Only Put a value here IF you want to change the password." />
+      </div>
+
+      <div class="form-group">
+        <label for="roles" class="control-label">Roles</label>
+        <RolesEditor ref="roleeditor" Roles="@UserInfo.AllowedRoles"></RolesEditor>
       </div>
 
       <div class="form-group">
@@ -72,11 +72,14 @@
   [Parameter]
   private Action OnCancelClicked { get; set; }
 
+  private RolesEditor roleeditor;
+
   public User UserData { get; private set; }
 
   private void SaveButtonClicked()
   {
     UserData = UserInfo;
+    UserData.AllowedRoles = roleeditor.RolesList.ToArray();
     OnSaveClicked?.Invoke();
   }
 

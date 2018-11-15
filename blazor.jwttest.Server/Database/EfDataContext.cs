@@ -30,7 +30,6 @@ namespace blazor.jwttest.Server.Database
         .HasData(
           new DbUser
           {
-            Id = 1,
             LoginName = "admin",
             FullName = "Administrator",
             Email = "admin@mycorp.com",

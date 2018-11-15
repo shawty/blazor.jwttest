@@ -1,0 +1,45 @@
+﻿@using Microsoft.AspNetCore.Blazor.Services
+@using blazor.jwttest.Shared
+@page "/delete/user/{userId}"
+@inject HttpClient Http
+@inject IUriHelper UriHelper
+
+<div class="container h-100">
+
+  <br><br><h3 class="display-4 text-center">Are you Sure you want to delete this user?</h3>
+  <p class="lead text-center text-danger">This operation is permenent and cannot be undone.</p>
+  <div class="row">
+    <div class="col-4"></div>
+    <div class="col">
+      <button class="btn btn-success btn-block" onclick="@NoClicked">No</button>
+    </div>
+    <div class="col">
+      <button class="btn btn-danger btn-block" onclick="@YesClicked">Yes</button>
+    </div>
+    <div class="col-4"></div>
+  </div>
+
+</div>
+
+@functions {
+
+  [Parameter]
+  string UserId { get; set; }
+
+  private async void YesClicked()
+  {
+    User user = new User();
+    user.Id = Convert.ToInt32(UserId);
+
+    await Http.SendJsonAsync(HttpMethod.Post, "api/users/delete", user);
+    UriHelper.NavigateTo("edit/users");
+
+  }
+
+  private void NoClicked()
+  {
+    UriHelper.NavigateTo("/edit/users");
+  }
+
+}
+

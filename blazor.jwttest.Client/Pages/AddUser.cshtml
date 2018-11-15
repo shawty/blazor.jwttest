@@ -4,7 +4,7 @@
 @inject HttpClient Http
 @inject IUriHelper UriHelper
 
-<UserForm ref="userForm" LoadingMessage="Initialising User, please wait..." MakeIdReadOnly="false" UserInfo="@newUser" OnSaveClicked="@SaveClicked" OnCancelClicked="@CancelClicked"></UserForm>
+<UserForm ref="userForm" LoadingMessage="Initialising User, please wait..." MakeIdReadOnly="true" UserInfo="@newUser" OnSaveClicked="@SaveClicked" OnCancelClicked="@CancelClicked"></UserForm>
 
 @functions {
 
@@ -14,10 +14,9 @@
   private User newUser;
   UserForm userForm;
 
-  protected override async Task OnInitAsync()
+  protected override void OnInit()
   {
     newUser = new User();
-    newUser.Id = 0; // Set it to 0 so EF core creates a new one
   }
 
   private async void SaveClicked()

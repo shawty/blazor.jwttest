@@ -35,6 +35,8 @@ else
 
   Todo[] todos;
 
+  string[] testData = new string[] { "role 1", "role 2", "role 3", "role 4" };
+
   protected override async Task OnInitAsync()
   {
     todos = await Http.GetJsonAsync<Todo[]>("api/todos/all");

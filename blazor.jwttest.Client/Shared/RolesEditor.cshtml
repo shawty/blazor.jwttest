@@ -1,0 +1,61 @@
+﻿@using blazor.jwttest.Client.Classes
+@inject ApplicationState AppState
+
+<div>
+  <ul class="list-group">
+    <li class="list-group-item">
+      <div class="input-group">
+        <input bind="@newRoleName" type="text" class="form-control" id="newrole" placeholder="Enter new role here and click ADD" />
+        <div class="input-group-append">
+          <button class="btn btn-success" type="button" onclick="@handleAddClick">Add</button>
+        </div>
+      </div>
+    </li>
+
+    @foreach (string role in RolesList)
+    {
+      <li class="list-group-item">
+        @role<div class="close oi oi-circle-x" aria-hidden="true" onclick="@(() => handleDeleteClick(role))"></div>
+      </li>
+    }
+
+  </ul>
+</div>
+
+
+@functions {
+
+  [Parameter]
+  private string[] Roles { get; set; }
+
+  public List<string> RolesList { get; set; }
+  private string newRoleName;
+
+  protected override void OnParametersSet()
+  {
+    if(RolesList == null)
+    {
+      RolesList = new List<string>();
+      if (Roles != null)
+      {
+        RolesList.AddRange(Roles);
+      }
+    }
+
+  }
+
+  private void handleDeleteClick(string role)
+  {
+    RolesList.Remove(role);
+  }
+
+  private void handleAddClick()
+  {
+    if (!String.IsNullOrEmpty(newRoleName))
+    {
+      RolesList.Add(newRoleName);
+      newRoleName = String.Empty;
+    }
+  }
+
+}

@@ -22,11 +22,12 @@ else
     <tbody>
       @foreach (var user in users)
       {
-        <tr>
-          <td>@user.Id</td>
-          <td>@user.LoginName</td>
-          <td><a href="/edit/user/@user.Id" class="btn btn-sm btn-primary">Edit User</a></td>
-        </tr>
+      <tr>
+        <td>@user.Id</td>
+        <td>@user.LoginName</td>
+        <td><a href="/edit/user/@user.Id" class="btn btn-sm btn-primary">Edit User</a></td>
+        <td><a href="/delete/user/@user.Id" class="btn btn-sm btn-danger">Delete User</a></td>
+      </tr>
       }
     </tbody>
   </table>
