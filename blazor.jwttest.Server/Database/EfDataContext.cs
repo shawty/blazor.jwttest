@@ -15,6 +15,10 @@ namespace blazor.jwttest.Server.Database
 
     protected override void OnModelCreating(ModelBuilder builder)
     {
+      //builder.Entity<DbUser>()
+      //  .Property(b => b.Id)
+      //  .ValueGeneratedOnAdd();
+
       // Make sure the base is called
       base.OnModelCreating(builder);
 
@@ -30,6 +34,7 @@ namespace blazor.jwttest.Server.Database
         .HasData(
           new DbUser
           {
+            Id = 1,
             LoginName = "admin",
             FullName = "Administrator",
             Email = "admin@mycorp.com",

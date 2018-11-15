@@ -6,8 +6,6 @@ namespace blazor.jwttest.Server.Database.Entities
 {
   public class DbEntityBase
   {
-    [Key]
-    [DatabaseGenerated(DatabaseGeneratedOption.None)]
     [Column("id")]
     public int Id { get; set; }
 
