@@ -64,6 +64,14 @@ namespace blazor.jwttest.Server
         // are missing, then you'll get an exception when you try to read and write data, telling you there are no tables.
         // you'll probably want to kill this and use migrations or something for a larger app, THIS IS JUST FOR TESTING
         serviceScope.ServiceProvider.GetService<EfDataContext>().Database.EnsureCreated();
+
+        // This small snippet of SQL is specific to PostgreSQL databases only.  Beacuse of the way postgre sequences work
+        // we need to advance the sequence by one to account for the data we seed into the users table, so that the next
+        // record inserted has it's integer ID start at the correct place.
+        // if you add more records in the SeedData function in the Ef data context, this statement will have to be altered
+        // accordingly.
+        serviceScope.ServiceProvider.GetService<EfDataContext>().Database.ExecuteSqlCommand("select nextval('users_id_seq')");
+
       }
 
       app.UseResponseCompression();

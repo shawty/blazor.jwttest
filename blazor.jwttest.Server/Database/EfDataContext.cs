@@ -15,15 +15,12 @@ namespace blazor.jwttest.Server.Database
 
     protected override void OnModelCreating(ModelBuilder builder)
     {
-      //builder.Entity<DbUser>()
-      //  .Property(b => b.Id)
-      //  .ValueGeneratedOnAdd();
-
       // Make sure the base is called
       base.OnModelCreating(builder);
 
       // Call our data seeder
       SeedData(builder);
+
     }
 
     private void SeedData(ModelBuilder builder)
