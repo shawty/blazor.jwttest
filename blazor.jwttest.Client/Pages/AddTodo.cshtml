@@ -1,0 +1,31 @@
+﻿@using Microsoft.AspNetCore.Blazor.Services
+@using blazor.jwttest.Shared
+@page "/add/todo"
+@inject HttpClient Http
+@inject IUriHelper UriHelper
+
+<TodoForm ref="todoForm" LoadingMessage="Initialising Todo, please wait..." TodoInfo="@newTodo" OnSaveClicked="@SaveClicked" OnCancelClicked="@CancelClicked"></TodoForm>
+
+@functions {
+
+  private Todo newTodo;
+  TodoForm todoForm;
+
+  protected override void OnInit()
+  {
+    newTodo = new Todo();
+  }
+
+  private async void SaveClicked()
+  {
+    await Http.SendJsonAsync<User>(HttpMethod.Post, "api/todos/create", todoForm.TodoData);
+    UriHelper.NavigateTo("edit/todos");
+  }
+
+  private void CancelClicked()
+  {
+    UriHelper.NavigateTo("/edit/todos");
+  }
+
+}
+

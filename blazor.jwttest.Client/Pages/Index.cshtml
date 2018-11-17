@@ -31,15 +31,32 @@ else
   </table>
 }
 
+<hr/>
+
+<h1>Testing</h1>
+<button onclick="@update">Update</button>
+<input type="checkbox" bind="@TestOption" />
+<SlideSwitch CheckedState=@TestOption></SlideSwitch>
+
+<hr/>
+
+
 @functions {
 
   Todo[] todos;
+
+  private bool TestOption { get; set; }
 
   string[] testData = new string[] { "role 1", "role 2", "role 3", "role 4" };
 
   protected override async Task OnInitAsync()
   {
     todos = await Http.GetJsonAsync<Todo[]>("api/todos/all");
+  }
+
+  protected void update()
+  {
+    StateHasChanged();
   }
 
 }

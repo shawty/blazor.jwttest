@@ -10,6 +10,7 @@
 }
 else
 {
+  <td><a href="/add/todo" class="btn btn-success">Add New Todo</a></td><br />
   <table class="table">
     <thead>
       <tr>
@@ -33,12 +34,12 @@ else
 
 @functions {
 
-  Todo[] todos;
+Todo[] todos;
 
-  protected override async Task OnInitAsync()
-  {
-    todos = await Http.GetJsonAsync<Todo[]>("api/todos/all");
-  }
+protected override async Task OnInitAsync()
+{
+  todos = await Http.GetJsonAsync<Todo[]>("api/todos/all");
+}
 
 }
 

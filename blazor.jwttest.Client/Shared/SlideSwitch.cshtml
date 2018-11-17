@@ -1,0 +1,16 @@
+﻿
+<div style="border: 2px solid red;">
+  <input type="checkbox" bind="@CheckedState" />
+  <span>I'm the child, click my check box</span>
+</div>
+
+
+@functions {
+
+  [Parameter]
+  private bool CheckedState { get; set; }
+
+  [Parameter]
+  private bool CheckedStateChanged { get; set; }
+
+}
