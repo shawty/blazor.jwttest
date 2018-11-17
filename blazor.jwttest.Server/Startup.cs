@@ -88,5 +88,6 @@ namespace blazor.jwttest.Server
 
       app.UseBlazor<Client.Startup>();
     }
+
   }
 }

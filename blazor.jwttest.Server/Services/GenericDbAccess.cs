@@ -13,7 +13,7 @@ namespace blazor.jwttest.Server.Services
   public class GenericDbAccess<viewT, dbT> where dbT : DbEntityBase
   {
     internal readonly EfDataContext _db;
-    internal ILogger _logger;
+    //internal ILogger _logger;
 
     public GenericDbAccess(EfDataContext db)
     {
