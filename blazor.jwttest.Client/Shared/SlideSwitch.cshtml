@@ -1,30 +1,54 @@
 ﻿
 <div style="border: 2px solid red;">
-  <input type="checkbox" value="@CheckedState" onchange="@changeHandler" />
+  <input type="checkbox" bind="@InternalCheckedState" />
   <span>I'm the child, click my check box</span>
 </div>
 
 
 @functions {
 
-  [Parameter]
-  protected bool CheckedState { get; set; }
+  private bool _checkedState;
 
   [Parameter]
-  protected Action<bool> CheckedStateChanged { get; set; }
+  protected bool CheckedState
+  {
+      get
+      {
+          return InternalCheckedState;
+      }
+      set
+      {
+          _checkedState = value;
+          StateHasChanged();
+      }
+  }
+
+  bool InternalCheckedState
+  {
+      get
+      {
+          return _checkedState;
+      }
+      set
+      {
+          changeHandler(value);
+      }
+  }
+
+  [Parameter]
+  protected Action<bool> CheckedChanged { get; set; }
 
   protected override void OnParametersSet()
   {
-    base.OnParametersSet();
-    StateHasChanged();
+      base.OnParametersSet();
+      StateHasChanged();
   }
 
-  protected void changeHandler(UIChangeEventArgs args)
+  protected void changeHandler(bool Value)
   {
-    Console.WriteLine($"Child Changed : {args.Value}");
-    CheckedState = (bool)args.Value;
-    CheckedStateChanged?.Invoke(CheckedState);
-    StateHasChanged();
+      Console.WriteLine($"Child Changed : {Value}");
+      _checkedState = Value;
+      CheckedChanged?.Invoke(CheckedState);
   }
 
 }

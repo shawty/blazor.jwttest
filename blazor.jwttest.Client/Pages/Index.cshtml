@@ -36,7 +36,7 @@ else
 <h1>Testing</h1>
 <button onclick="@update">Update</button>
 <input type="checkbox" bind="@TestOption" />
-<SlideSwitch bind-CheckedState="@TestOption"></SlideSwitch>
+<SlideSwitch CheckedState="@TestOption" CheckedChanged="@ChildUpdate"></SlideSwitch>
 <span>State is : @TestOption</span>
 <hr />
 
@@ -51,12 +51,18 @@ else
 
   protected override async Task OnInitAsync()
   {
-    todos = await Http.GetJsonAsync<Todo[]>("api/todos/all");
+      todos = await Http.GetJsonAsync<Todo[]>("api/todos/all");
+  }
+
+  protected void ChildUpdate(bool value)
+  {
+      TestOption = value;
+      StateHasChanged();
   }
 
   protected void update()
   {
-    StateHasChanged();
+      StateHasChanged();
   }
 
 }
