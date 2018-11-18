@@ -21,7 +21,7 @@
 
   private async void SaveClicked()
   {
-    await Http.SendJsonAsync<User>(HttpMethod.Post, "api/users/update", todoForm.TodoData);
+    await Http.SendJsonAsync<User>(HttpMethod.Post, "api/todos/update", todoForm.TodoData);
     UriHelper.NavigateTo("edit/todos");
   }
 

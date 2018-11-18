@@ -17,16 +17,22 @@ else
         <th>#</th>
         <th>Title</th>
         <th>Done</th>
+        <th>&nbsp;</th>
       </tr>
     </thead>
     <tbody>
       @foreach (var todo in todos)
       {
-        <tr>
-          <td>@todo.Id</td>
-          <td>@todo.Title</td>
-          <td>@todo.Done</td>
-        </tr>
+      <tr>
+        <td>@todo.Id</td>
+        <td>@todo.Title</td>
+        <td>@todo.Done</td>
+        <td>
+          <a href="/edit/todo/@todo.Id" class="btn btn-sm btn-primary">Edit Todo</a>
+          <a href="/delete/todo/@todo.Id" class="btn btn-sm btn-danger">Delete Todo</a>
+        </td>
+
+      </tr>
       }
     </tbody>
   </table>

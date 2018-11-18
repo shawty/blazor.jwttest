@@ -1,6 +1,6 @@
 ﻿
 <div style="border: 2px solid red;">
-  <input type="checkbox" bind="@CheckedState" />
+  <input type="checkbox" value="@CheckedState" onchange="@changeHandler" />
   <span>I'm the child, click my check box</span>
 </div>
 
@@ -8,9 +8,23 @@
 @functions {
 
   [Parameter]
-  private bool CheckedState { get; set; }
+  protected bool CheckedState { get; set; }
 
   [Parameter]
-  private bool CheckedStateChanged { get; set; }
+  protected Action<bool> CheckedStateChanged { get; set; }
+
+  protected override void OnParametersSet()
+  {
+    base.OnParametersSet();
+    StateHasChanged();
+  }
+
+  protected void changeHandler(UIChangeEventArgs args)
+  {
+    Console.WriteLine($"Child Changed : {args.Value}");
+    CheckedState = (bool)args.Value;
+    CheckedStateChanged?.Invoke(CheckedState);
+    StateHasChanged();
+  }
 
 }
