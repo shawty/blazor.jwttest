@@ -4,7 +4,7 @@
 @inject HttpClient Http
 @inject IUriHelper UriHelper
 
-<TodoForm ref="todoForm" LoadingMessage="Loading User, please wait..." TodoInfo="@loadedTodo" OnSaveClicked="@SaveClicked" OnCancelClicked="@CancelClicked"></TodoForm>
+<TodoForm ref="todoForm" LoadingMessage="Loading Todo, please wait..." TodoInfo="@loadedTodo" OnSaveClicked="@SaveClicked" OnCancelClicked="@CancelClicked"></TodoForm>
 
 @functions {
 
@@ -16,17 +16,21 @@
 
   protected override async Task OnInitAsync()
   {
+    Console.WriteLine($"Init, getting data");
     loadedTodo = await Http.GetJsonAsync<Todo>($"api/todos/retrieve/{TodoId}");
+    Console.WriteLine($"Init got data");
   }
 
   private async void SaveClicked()
   {
-    await Http.SendJsonAsync<User>(HttpMethod.Post, "api/todos/update", todoForm.TodoData);
+    Console.WriteLine($"Save Clicked");
+    await Http.SendJsonAsync<Todo>(HttpMethod.Post, "api/todos/update", todoForm.TodoData);
     UriHelper.NavigateTo("edit/todos");
   }
 
   private void CancelClicked()
   {
+    Console.WriteLine($"Cancel Clicked");
     UriHelper.NavigateTo("/edit/todos");
   }
 

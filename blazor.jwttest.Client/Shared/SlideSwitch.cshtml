@@ -1,54 +1,87 @@
 ﻿
-<div style="border: 2px solid red;">
+<style>
+  .slideSwitch {
+  }
+
+    .slideSwitch input[type="checkbox"] {
+      position: relative;
+      width: 60px;
+      height: 30px;
+      background: @SwitchOffColor;
+      -moz-appearance: none;
+      -webkit-appearance: none;
+      outline: none;
+      border-radius: 20px;
+      box-shadow: inset 0 0 5px rgba(0,0,0,.2);
+      transition: .5s;
+    }
+
+    .slideSwitch input:checked[type="checkbox"] {
+      background: @SwitchOnColor;
+    }
+
+    .slideSwitch input[type="checkbox"]:before {
+      content: '';
+      position: absolute;
+      width: 30px;
+      height: 30px;
+      border-radius: 20px;
+      top: 0;
+      left: 0;
+      background: #ffffff;
+      transform: scale(1.1);
+      box-shadow: 0 2px 5px rgba(0,0,0,.2);
+      transition: .5s;
+    }
+
+    .slideSwitch input:checked[type="checkbox"]:before {
+      left: 30px;
+    }
+
+</style>
+
+<div class="slideSwitch">
   <input type="checkbox" bind="@InternalCheckedState" />
-  <span>I'm the child, click my check box</span>
 </div>
 
 
 @functions {
 
-  private bool _checkedState;
+  [Parameter]
+  protected Action<bool> CheckedChanged { get; set; }
 
   [Parameter]
   protected bool CheckedState
   {
-      get
-      {
-          return InternalCheckedState;
-      }
-      set
-      {
-          _checkedState = value;
-          StateHasChanged();
-      }
-  }
-
-  bool InternalCheckedState
-  {
-      get
-      {
-          return _checkedState;
-      }
-      set
-      {
-          changeHandler(value);
-      }
+    get
+    {
+      return _checkedState;
+    }
+    set
+    {
+      _checkedState = value;
+    }
   }
 
   [Parameter]
-  protected Action<bool> CheckedChanged { get; set; }
+  protected string SwitchOffColor { get; set; }
 
-  protected override void OnParametersSet()
-  {
-      base.OnParametersSet();
-      StateHasChanged();
-  }
+  [Parameter]
+  protected string SwitchOnColor { get; set; }
 
-  protected void changeHandler(bool Value)
+  private bool _checkedState;
+
+  bool InternalCheckedState
   {
-      Console.WriteLine($"Child Changed : {Value}");
-      _checkedState = Value;
-      CheckedChanged?.Invoke(CheckedState);
+    get
+    {
+      return _checkedState;
+    }
+    set
+    {
+      _checkedState = value;
+      CheckedChanged?.Invoke(value);
+    }
   }
 
 }

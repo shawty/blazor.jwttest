@@ -29,8 +29,7 @@
 
       <div class="form-group">
         <label for="done" class="control-label">Is Complete?</label>
-        <input type="checkbox" id="done" class="form-control" bind="@TodoInfo.Done" />
-        <SlideSwitch bind-CheckedState="@TodoInfo.Done"></SlideSwitch>
+        <SlideSwitch CheckedState="@TodoInfo.Done" CheckedChanged="@DoneStatusChanged" SwitchOnColor="#28A745" SwitchOffColor="#DC3545"></SlideSwitch>
       </div>
 
       <div class="form-group">
@@ -49,7 +48,7 @@
   //TODO: Add some kind of validation service
 
   [Parameter]
-  private Todo TodoInfo { get; set; }
+  protected Todo TodoInfo { get; set; }
 
   [Parameter]
   private string LoadingMessage { get; set; }
@@ -71,6 +70,13 @@
   private void CancelButtonClicked()
   {
     OnCancelClicked?.Invoke();
+  }
+
+  private void DoneStatusChanged(bool value)
+  {
+    TodoInfo.Done = value;
+    StateHasChanged();
+
   }
 
 }
