@@ -48,6 +48,9 @@
     <Content Update="Pages\Login.cshtml">
       <Pack>$(IncludeRazorContentInPack)</Pack>
     </Content>
+    <Content Update="Shared\PopupDialog.cshtml">
+      <Pack>$(IncludeRazorContentInPack)</Pack>
+    </Content>
     <Content Update="Shared\SlideSwitch.cshtml">
       <Pack>$(IncludeRazorContentInPack)</Pack>
     </Content>

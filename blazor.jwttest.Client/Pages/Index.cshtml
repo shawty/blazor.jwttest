@@ -1,4 +1,5 @@
 ﻿@using blazor.jwttest.Shared
+@using System.Threading;
 @page "/"
 @inject HttpClient Http
 
@@ -29,25 +30,48 @@ else
       }
     </tbody>
   </table>
+
+  <hr />
+  <h1>Testing</h1>
+
+  <button class="btn btn-primary" onclick="@clickHandler">Show</button>
+  <span>Show Dlg is : <span class="text-info">@showDlg</span></span>
+
+  <hr />
+
+  <PopupDialog Show="@showDlg">
+    <div class="alert alert-success" role="alert">
+      <h4 class="alert-heading">Well done!</h4>
+      <p>Aww yeah, you successfully read this important alert message. This example text is going to run a bit longer so that you can see how spacing within an alert works with this kind of content.</p>
+      <hr>
+      <p class="mb-0">Whenever you need to, be sure to use margin utilities to keep things nice and tidy.</p>
+    </div>
+  </PopupDialog>
 }
 
 @functions {
 
   Todo[] todos;
 
-  private bool TestOption { get; set; }
+  private bool showDlg { get; set; } = false;
+  private Timer _timer;
 
   protected override async Task OnInitAsync()
   {
     todos = await Http.GetJsonAsync<Todo[]>("api/todos/all");
   }
 
-  protected void ChildUpdate(bool value)
+  protected void clickHandler()
   {
-    Console.WriteLine($"Child Update {value}");
-    TestOption = value;
-    StateHasChanged();
+    showDlg = true;
+    _timer = new Timer(TimerCallBack, null, 5000, Timeout.Infinite);
 
+  }
+
+  void TimerCallBack(object state)
+  {
+    showDlg = false;
+    StateHasChanged();
   }
 
 }
