@@ -1,8 +1,12 @@
 ﻿@using Microsoft.AspNetCore.Blazor.Services
 @using blazor.jwttest.Shared
-@page "/edit/user/{userId}"
+@using blazor.jwttest.Client.Classes
+
 @inject HttpClient Http
 @inject IUriHelper UriHelper
+@inject ApplicationState  AppState
+
+@page "/edit/user/{userId}"
 
 <UserForm ref="userForm" LoadingMessage="Loading User, please wait..." MakeIdReadOnly="true" UserInfo="@loadedUser" OnSaveClicked="@SaveClicked" OnCancelClicked="@CancelClicked"></UserForm>
 
@@ -13,9 +17,21 @@
 
   private User loadedUser;
   UserForm userForm;
+  private readonly List<string> allowedRoles = new List<string>() { "useredit", "admin" };
+  NavigationFailReason failReason = NavigationFailReason.Unknown;
 
   protected override async Task OnInitAsync()
   {
+    if (!AppState.IsAllowedToNavigate(allowedRoles, out failReason, "/login"))
+    {
+      if (failReason == NavigationFailReason.RoleNotAllowed)
+      {
+        UriHelper.NavigateTo("/error403");
+        return;
+      }
+    }
+
+    // If we get here we're allowed to access this page
     loadedUser = await Http.GetJsonAsync<User>($"api/users/retrieve/{UserId}");
   }
 

@@ -1,6 +1,12 @@
-﻿@using blazor.jwttest.Shared
-@page "/edit/users"
+﻿@using Microsoft.AspNetCore.Blazor.Services
+@using blazor.jwttest.Shared
+@using blazor.jwttest.Client.Classes
+
 @inject HttpClient Http
+@inject IUriHelper UriHelper
+@inject ApplicationState  AppState
+
+@page "/edit/users"
 
 <h1>Edit Users's</h1>
 
@@ -10,7 +16,7 @@
 }
 else
 {
-  <td><a href="/add/user" class="btn btn-success">Add New User</a></td><br/>
+  <td><a href="/add/user" class="btn btn-success">Add New User</a></td><br />
   <table class="table">
     <thead>
       <tr>
@@ -22,14 +28,14 @@ else
     <tbody>
       @foreach (var user in users)
       {
-      <tr>
-        <td>@user.Id</td>
-        <td>@user.LoginName</td>
-        <td>
-          <a href="/edit/user/@user.Id" class="btn btn-sm btn-primary">Edit User</a>
-          <a href="/delete/user/@user.Id" class="btn btn-sm btn-danger">Delete User</a>
-        </td>
-      </tr>
+        <tr>
+          <td>@user.Id</td>
+          <td>@user.LoginName</td>
+          <td>
+            <a href="/edit/user/@user.Id" class="btn btn-sm btn-primary">Edit User</a>
+            <a href="/delete/user/@user.Id" class="btn btn-sm btn-danger">Delete User</a>
+          </td>
+        </tr>
       }
     </tbody>
   </table>
@@ -37,12 +43,25 @@ else
 
 @functions {
 
-User[] users;
+  User[] users;
 
-protected override async Task OnInitAsync()
-{
-  users = await Http.GetJsonAsync<User[]>("api/users/all");
-}
+  private readonly List<string> allowedRoles = new List<string>() { "useredit", "admin" };
+  NavigationFailReason failReason = NavigationFailReason.Unknown;
+
+  protected override async Task OnInitAsync()
+  {
+    if (!AppState.IsAllowedToNavigate(allowedRoles, out failReason, "/login"))
+    {
+      if (failReason == NavigationFailReason.RoleNotAllowed)
+      {
+        UriHelper.NavigateTo("/error403");
+        return;
+      }
+    }
+
+    // If we get here we're allowed to access this page
+    users = await Http.GetJsonAsync<User[]>("api/users/all");
+  }
 
 }
 

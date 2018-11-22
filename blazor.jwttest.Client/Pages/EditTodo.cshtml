@@ -1,8 +1,12 @@
 ﻿@using Microsoft.AspNetCore.Blazor.Services
 @using blazor.jwttest.Shared
-@page "/edit/todo/{todoId}"
+@using blazor.jwttest.Client.Classes
+
 @inject HttpClient Http
 @inject IUriHelper UriHelper
+@inject ApplicationState  AppState
+
+@page "/edit/todo/{todoId}"
 
 <TodoForm ref="todoForm" LoadingMessage="Loading Todo, please wait..." TodoInfo="@loadedTodo" OnSaveClicked="@SaveClicked" OnCancelClicked="@CancelClicked"></TodoForm>
 
@@ -14,23 +18,31 @@
   private Todo loadedTodo;
   TodoForm todoForm;
 
+  private readonly List<string> allowedRoles = new List<string>() { "todoedit" };
+  NavigationFailReason failReason = NavigationFailReason.Unknown;
+
   protected override async Task OnInitAsync()
   {
-    Console.WriteLine($"Init, getting data");
+    if (!AppState.IsAllowedToNavigate(allowedRoles, out failReason, "/login"))
+    {
+      if (failReason == NavigationFailReason.RoleNotAllowed)
+      {
+        UriHelper.NavigateTo("/error403");
+        return;
+      }
+    }
+
     loadedTodo = await Http.GetJsonAsync<Todo>($"api/todos/retrieve/{TodoId}");
-    Console.WriteLine($"Init got data");
   }
 
   private async void SaveClicked()
   {
-    Console.WriteLine($"Save Clicked");
     await Http.SendJsonAsync<Todo>(HttpMethod.Post, "api/todos/update", todoForm.TodoData);
     UriHelper.NavigateTo("edit/todos");
   }
 
   private void CancelClicked()
   {
-    Console.WriteLine($"Cancel Clicked");
     UriHelper.NavigateTo("/edit/todos");
   }
 

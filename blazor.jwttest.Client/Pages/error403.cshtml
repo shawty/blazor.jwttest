@@ -1,0 +1,24 @@
+﻿@using blazor.jwttest.Shared
+@using System.Threading;
+@page "/error403"
+@inject HttpClient Http
+
+<div class="container">
+  <div class="row">
+    <div class="col-md-3">&nbsp;</div>
+    <div class="col-md-6">
+      <br />
+      <br />
+      <h1 class="text-danger text-center">Access Denied</h1>
+      <h2 class="text-danger text-center">Your current login/account does not allow you access to that page</h2>
+      <br />
+      <br />
+      <p class="text-info text-center lead">If you believe that this is an error then you need to contact support to have the error resolved.</p>
+    </div>
+    <div class="col-md-3">&nbsp;</div>
+  </div>
+</div>
+
+@functions {
+}
+

@@ -1,6 +1,7 @@
 ﻿@using Microsoft.AspNetCore.Blazor.Services
 @using blazor.jwttest.Client.Classes
 @using blazor.jwttest.Shared
+@using System.Threading;
 
 @inject IUriHelper UriHelper
 @inject ApplicationState  _appState
@@ -18,12 +19,6 @@
   <div class="row">
     <div class="col-md-4 offset-md-4">
       <div class="editor">
-        @if (ShowLoginFailed)
-        {
-        <div class="alert alert-danger pt-4 pb-4">
-          Login attempt failed.
-        </div>
-        }
 
         <input type="text" bind=@LoginDetails.Username placeholder="Username" class="form-control mb-2" />
         <input type="password" bind=@LoginDetails.Password placeholder="Password" class="form-control mb-2" />
@@ -35,23 +30,44 @@
 
 </div>
 
+<PopupDialog Show="@ShowLoginFailed">
+  <div class="alert alert-danger" role="alert">
+    <h4 class="alert-heading">Login Attempt Failed</h4>
+    <p>The password and/or username you supplied for login where not accepted.</p>
+    <p>Please ensure you used the correct details to authenticate with the application</p>
+    <hr>
+    <p class="mb-0">If your credentials continue to fail please contact support for assistance.</p>
+  </div>
+</PopupDialog>
+
 @functions {
 
-protected LoginDetails LoginDetails { get; set; } = new LoginDetails();
-protected bool ShowLoginFailed { get; set; }
+  protected LoginDetails LoginDetails { get; set; } = new LoginDetails();
+  protected bool ShowLoginFailed { get; set; }
 
-protected async Task LoginToApplication()
-{
-  await _appState.Login(LoginDetails);
+  private bool showPopup { get; set; } = false;
+  private Timer _timer;
 
-  if (_appState.IsLoggedIn)
+
+  protected async Task LoginToApplication()
   {
-    UriHelper.NavigateTo("/");
+    await _appState.Login(LoginDetails);
+
+    if (_appState.IsLoggedIn)
+    {
+      UriHelper.NavigateTo("/");
+    }
+    else
+    {
+      ShowLoginFailed = true;
+      _timer = new Timer(TimerCallBack, null, 5000, Timeout.Infinite);
+    }
   }
-  else
+
+  void TimerCallBack(object state)
   {
-    ShowLoginFailed = true;
+    ShowLoginFailed = false;
+    StateHasChanged();
   }
-}
 
 }

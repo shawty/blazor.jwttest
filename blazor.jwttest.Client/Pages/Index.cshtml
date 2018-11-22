@@ -34,45 +34,37 @@ else
   <hr />
   <h1>Testing</h1>
 
-  <button class="btn btn-primary" onclick="@clickHandler">Show</button>
-  <span>Show Dlg is : <span class="text-info">@showDlg</span></span>
+  <a href="/edit/todos">Todos</a><br/>
+  <a href="/edit/todo/1">Todo 1</a><br />
+  <a href="/add/todo">Add Todo</a><br />
+  <a href="/delete/todo/1">Delete Todo</a><br />
 
-  <hr />
-
-  <PopupDialog Show="@showDlg">
-    <div class="alert alert-success" role="alert">
-      <h4 class="alert-heading">Well done!</h4>
-      <p>Aww yeah, you successfully read this important alert message. This example text is going to run a bit longer so that you can see how spacing within an alert works with this kind of content.</p>
-      <hr>
-      <p class="mb-0">Whenever you need to, be sure to use margin utilities to keep things nice and tidy.</p>
-    </div>
-  </PopupDialog>
 }
 
 @functions {
 
-  Todo[] todos;
+Todo[] todos;
 
-  private bool showDlg { get; set; } = false;
-  private Timer _timer;
+private bool showDlg { get; set; } = false;
+private Timer _timer;
 
-  protected override async Task OnInitAsync()
-  {
-    todos = await Http.GetJsonAsync<Todo[]>("api/todos/all");
-  }
+protected override async Task OnInitAsync()
+{
+  todos = await Http.GetJsonAsync<Todo[]>("api/todos/all");
+}
 
-  protected void clickHandler()
-  {
-    showDlg = true;
-    _timer = new Timer(TimerCallBack, null, 5000, Timeout.Infinite);
+protected void clickHandler()
+{
+  showDlg = true;
+  _timer = new Timer(TimerCallBack, null, 5000, Timeout.Infinite);
 
-  }
+}
 
-  void TimerCallBack(object state)
-  {
-    showDlg = false;
-    StateHasChanged();
-  }
+void TimerCallBack(object state)
+{
+  showDlg = false;
+  StateHasChanged();
+}
 
 }
 
