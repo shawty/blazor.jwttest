@@ -1,6 +1,7 @@
 ﻿using blazor.jwttest.Server.Services;
 using blazor.jwttest.Server.Services.Exceptions;
 using blazor.jwttest.Shared;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
 
@@ -26,6 +27,7 @@ namespace blazor.jwttest.Server.Controllers
 
     [HttpPost]
     [Route("[action]")]
+    [Authorize(Roles = "todoedit")]
     public IActionResult Create([FromBody]Todo todo)
     {
       Todo newTodo = null;
@@ -39,6 +41,7 @@ namespace blazor.jwttest.Server.Controllers
     }
 
     [HttpGet("[action]/{todoId:int}")]
+    [Authorize(Roles = "todoedit")]
     public IActionResult Retrieve(int todoId)
     {
       try
@@ -54,6 +57,7 @@ namespace blazor.jwttest.Server.Controllers
 
     [HttpPost]
     [Route("[action]")]
+    [Authorize(Roles = "todoedit")]
     public IActionResult Update([FromBody]Todo todo)
     {
       if (ModelState.IsValid)
@@ -64,6 +68,7 @@ namespace blazor.jwttest.Server.Controllers
 
     [HttpPost]
     [Route("[action]")]
+    [Authorize(Roles = "todoedit")]
     public IActionResult Delete([FromBody]Todo todo)
     {
       try

@@ -1,6 +1,7 @@
 ﻿@using Microsoft.AspNetCore.Blazor.Services
 @using blazor.jwttest.Shared
 @using blazor.jwttest.Client.Classes
+@using blazor.jwttest.Client.Exceptions
 
 @inject HttpClient Http
 @inject IUriHelper UriHelper
@@ -30,9 +31,29 @@
         UriHelper.NavigateTo("/error403");
         return;
       }
+      return;
     }
 
-    loadedTodo = await Http.GetJsonAsync<Todo>($"api/todos/retrieve/{TodoId}");
+    try
+    {
+      loadedTodo = await Http.GetJsonAsync<Todo>($"api/todos/retrieve/{TodoId}");
+    }
+    catch(HttpUnauthorizedException)
+    {
+      UriHelper.NavigateTo("/error401");
+      return;
+    }
+    catch(HttpForbiddenException)
+    {
+      UriHelper.NavigateTo("/error403");
+      return;
+    }
+    catch (HttpInternalServerErrorException)
+    {
+      UriHelper.NavigateTo("/error500");
+      return;
+    }
+
   }
 
   private async void SaveClicked()

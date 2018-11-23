@@ -1,5 +1,6 @@
 using blazor.jwttest.Server.Database;
 using blazor.jwttest.Server.Services;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Blazor.Server;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -7,8 +8,11 @@ using Microsoft.AspNetCore.ResponseCompression;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.IdentityModel.Tokens;
+using System;
 using System.Linq;
 using System.Net.Mime;
+using System.Text;
 
 namespace blazor.jwttest.Server
 {
@@ -39,9 +43,12 @@ namespace blazor.jwttest.Server
       services.AddTransient<Users>();
       services.AddTransient<Todos>();
 
+      // Setup our JWT Token auth
+      ConfigureTokenAuth(services);
+
       // All the rest
       services.AddMvc();
-
+      services.AddOptions();
       services.AddResponseCompression(options =>
       {
         options.MimeTypes = ResponseCompressionDefaults.MimeTypes.Concat(new[]
@@ -74,6 +81,8 @@ namespace blazor.jwttest.Server
 
       }
 
+      app.UseAuthentication();
+
       app.UseResponseCompression();
 
       if (env.IsDevelopment())
@@ -87,6 +96,34 @@ namespace blazor.jwttest.Server
       });
 
       app.UseBlazor<Client.Startup>();
+    }
+
+    // Private function to configure our JWT Authentication on the server
+    private void ConfigureTokenAuth(IServiceCollection services)
+    {
+      services.AddAuthentication(options =>
+      {
+        options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
+        options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+        options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+      })
+        .AddJwtBearer(config =>
+        {
+          config.RequireHttpsMetadata = false;
+          config.SaveToken = true;
+          config.TokenValidationParameters = new TokenValidationParameters()
+          {
+            ValidateIssuerSigningKey = true,
+            IssuerSigningKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(Configuration["JwtSecurityKey"])),
+            ValidateIssuer = true,
+            ValidIssuer = Configuration["JwtIssuer"],
+            ValidateAudience = true,
+            ValidAudience = Configuration["JwtIssuer"],
+            ValidateLifetime = true,
+            ClockSkew = TimeSpan.Zero
+          };
+
+        });
     }
 
   }

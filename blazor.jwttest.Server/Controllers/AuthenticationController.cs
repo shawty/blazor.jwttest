@@ -1,11 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
+using System.Linq;
 using System.Security.Claims;
 using System.Text;
 using blazor.jwttest.Server.Services;
 using blazor.jwttest.Server.Services.Exceptions;
 using blazor.jwttest.Shared;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
@@ -28,6 +30,7 @@ namespace gisportal.Server.Controllers
     }
 
     [HttpPost("[action]")]
+    [AllowAnonymous]
     public IActionResult Login([FromBody] LoginDetails login)
     {
       User thisUser = null;
@@ -43,30 +46,48 @@ namespace gisportal.Server.Controllers
         return BadRequest("Username and password are invalid.");
       }
 
-      var claims = new List<Claim>()
+      DateTime issueTime = DateTime.UtcNow;
+
+      // Add required and basic JWT claims to the token
+      List<Claim> claims = new List<Claim>
       {
-        new Claim(ClaimTypes.Name, thisUser.LoginName),
-        new Claim(ClaimTypes.GivenName, thisUser.FullName),
-        new Claim(ClaimTypes.Email, thisUser.Email)
+        new Claim(JwtRegisteredClaimNames.Sub, thisUser.LoginName),
+        new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
+        new Claim(JwtRegisteredClaimNames.Iat, new DateTimeOffset(DateTime.UtcNow).ToUniversalTime().ToUnixTimeSeconds().ToString(), ClaimValueTypes.Integer64),
+        new Claim(JwtRegisteredClaimNames.Email, thisUser.Email),
+        new Claim(JwtRegisteredClaimNames.GivenName, thisUser.FullName)
       };
 
-      foreach(var role in thisUser.AllowedRoles)
+      // Add our users roles to the JWT
+      // DO NOT Change this claim name, ASP.NET core role auth requires this exact claim name for controller roles
+      claims.AddRange(
+        thisUser.AllowedRoles
+        .Select(role => new Claim("http://schemas.microsoft.com/ws/2008/06/identity/claims/role", role, ClaimValueTypes.String)));
+
+      // Build the actual token
+      int expiryLengthInMinutes = Convert.ToInt32(_configuration["JwtExpiryInMinutes"]);
+      DateTime now = DateTime.UtcNow;
+      TimeSpan expirationTime = new TimeSpan(0, expiryLengthInMinutes, 0);
+      var signingKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(_configuration["JwtSecurityKey"]));
+      var signingCredentials = new SigningCredentials(signingKey, SecurityAlgorithms.HmacSha256);
+
+      var jwt = new JwtSecurityToken(
+        _configuration["JwtIssuer"],
+        _configuration["JwtIssuer"],
+        claims,
+        expires: now.Add(expirationTime),
+        signingCredentials: signingCredentials);
+
+      var encodedJwt = new JwtSecurityTokenHandler().WriteToken(jwt);
+
+      // Create response and send token back to caller
+      var response = new
       {
-        claims.Add(new Claim(ClaimTypes.Role, role));
-      }
+        token = encodedJwt,
+        expires_in = (int)expirationTime.TotalSeconds
+      };
 
-      var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["JwtSecurityKey"]));
-      var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
-      var expiry = DateTime.Now.AddMinutes(Convert.ToInt32(_configuration["JwtExpiryInMinutes"]));
-      var token = new JwtSecurityToken(
-          _configuration["JwtIssuer"],
-          _configuration["JwtIssuer"],
-          claims,
-          expires: expiry,
-          signingCredentials: creds
-      );
-
-      return Ok(new { token = new JwtSecurityTokenHandler().WriteToken(token) });
+      return Ok(response);
 
     }
 

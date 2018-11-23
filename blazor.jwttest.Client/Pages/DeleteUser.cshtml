@@ -1,6 +1,7 @@
 ﻿@using Microsoft.AspNetCore.Blazor.Services
 @using blazor.jwttest.Shared
 @using blazor.jwttest.Client.Classes
+@using blazor.jwttest.Client.Exceptions
 
 @inject HttpClient Http
 @inject IUriHelper UriHelper
@@ -42,6 +43,7 @@
         UriHelper.NavigateTo("/error403");
         return;
       }
+      return;
     }
   }
 
@@ -50,7 +52,26 @@
     User user = new User();
     user.Id = Convert.ToInt32(UserId);
 
-    await Http.SendJsonAsync(HttpMethod.Post, "api/users/delete", user);
+    try
+    {
+      await Http.SendJsonAsync(HttpMethod.Post, "api/users/delete", user);
+    }
+    catch (HttpUnauthorizedException)
+    {
+      UriHelper.NavigateTo("/error401");
+      return;
+    }
+    catch (HttpForbiddenException)
+    {
+      UriHelper.NavigateTo("/error403");
+      return;
+    }
+    catch (HttpInternalServerErrorException)
+    {
+      UriHelper.NavigateTo("/error500");
+      return;
+    }
+
     UriHelper.NavigateTo("edit/users");
 
   }

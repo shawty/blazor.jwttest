@@ -1,6 +1,7 @@
 ﻿@using Microsoft.AspNetCore.Blazor.Services
 @using blazor.jwttest.Shared
 @using blazor.jwttest.Client.Classes
+@using blazor.jwttest.Client.Exceptions
 
 @inject HttpClient Http
 @inject IUriHelper UriHelper
@@ -29,6 +30,7 @@
         UriHelper.NavigateTo("/error403");
         return;
       }
+      return;
     }
 
     // If we get here we're allowed to access this page
@@ -37,7 +39,26 @@
 
   private async void SaveClicked()
   {
-    await Http.SendJsonAsync<User>(HttpMethod.Post, "api/users/create", userForm.UserData);
+    try
+    {
+      await Http.SendJsonAsync<User>(HttpMethod.Post, "api/users/create", userForm.UserData);
+    }
+    catch (HttpUnauthorizedException)
+    {
+      UriHelper.NavigateTo("/error401");
+      return;
+    }
+    catch (HttpForbiddenException)
+    {
+      UriHelper.NavigateTo("/error403");
+      return;
+    }
+    catch (HttpInternalServerErrorException)
+    {
+      UriHelper.NavigateTo("/error500");
+      return;
+    }
+
     UriHelper.NavigateTo("edit/users");
   }
 

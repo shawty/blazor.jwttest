@@ -3,7 +3,6 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
-using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -11,6 +10,9 @@ namespace blazor.jwttest.Client.Classes
 {
   public class JwtDecode
   {
+    // TODO: Figure out how to get the JWT Auth .net libs into blazor withoout totaly screwing things up
+    // and replace all the JwtClaim names in this file with proper constants.
+
     private string _header { get; set; }
     private string _payload { get; set; }
     private string _token { get; set; }
@@ -85,11 +87,12 @@ namespace blazor.jwttest.Client.Classes
     public string GetName()
     {
       string result = "Not Set";
+      string nameClaim = "sub";
 
       Dictionary<string, object> payload = GetPayload();
-      if (payload.ContainsKey(ClaimTypes.Name))
+      if (payload.ContainsKey(nameClaim))
       {
-        result = payload[ClaimTypes.Name] as string;
+        result = payload[nameClaim] as string;
       }
 
       return result;
@@ -98,11 +101,12 @@ namespace blazor.jwttest.Client.Classes
     public string GetFullName()
     {
       string result = "Not Set";
+      string givenNameClaim = "given_name";
 
       Dictionary<string, object> payload = GetPayload();
-      if (payload.ContainsKey(ClaimTypes.GivenName))
+      if (payload.ContainsKey(givenNameClaim))
       {
-        result = payload[ClaimTypes.GivenName] as string;
+        result = payload[givenNameClaim] as string;
       }
 
       return result;
@@ -111,11 +115,12 @@ namespace blazor.jwttest.Client.Classes
     public string GetEmail()
     {
       string result = "Not Set";
+      string emailClaim = "email";
 
       Dictionary<string, object> payload = GetPayload();
-      if (payload.ContainsKey(ClaimTypes.Email))
+      if (payload.ContainsKey(emailClaim))
       {
-        result = payload[ClaimTypes.Email] as string;
+        result = payload[emailClaim] as string;
       }
 
       return result;
@@ -123,20 +128,23 @@ namespace blazor.jwttest.Client.Classes
 
     public List<string> GetRoles()
     {
+      // DO NOT Change this claim name, ASP.NET Core roles auth requires this exact role for roles on a controller to work
+      const string roleType = "http://schemas.microsoft.com/ws/2008/06/identity/claims/role";
+
       List<string> result = new List<string>();
 
       Dictionary<string, object> payload = GetPayload();
-      if (payload.ContainsKey(ClaimTypes.Role))
+      if (payload.ContainsKey(roleType))
       {
         // Role claims can either be a single string or a JArray (since where using Json.Net), we need to detect which
-        if (payload[ClaimTypes.Role] is JArray)
+        if (payload[roleType] is JArray)
         {
-          result.AddRange((payload[ClaimTypes.Role] as JArray).ToObject<List<string>>());
+          result.AddRange((payload[roleType] as JArray).ToObject<List<string>>());
         }
 
-        if (payload[ClaimTypes.Role] is string)
+        if (payload[roleType] is string)
         {
-          result.Add(payload[ClaimTypes.Role] as string);
+          result.Add(payload[roleType] as string);
         }
 
       }
@@ -147,12 +155,12 @@ namespace blazor.jwttest.Client.Classes
     public bool HasTokenExpired()
     {
       bool result = false; // Always default to NO
+      string expiryClaim = "exp";
 
       Dictionary<string, object> payload = GetPayload();
-      if (payload.ContainsKey("exp"))
+      if (payload.ContainsKey(expiryClaim))
       {
-        // ???? Why doesn't the security claims enum include "exp"
-        double timeStamp = Convert.ToDouble(payload["exp"]);
+        double timeStamp = Convert.ToDouble(payload[expiryClaim]);
         DateTime expiryTime = new DateTime(1970, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc);
         expiryTime = expiryTime.AddSeconds(timeStamp);
         if(expiryTime < DateTime.UtcNow)
@@ -167,12 +175,12 @@ namespace blazor.jwttest.Client.Classes
     public string GetIssuer()
     {
       string result = "NOT SET";
+      string issuerClaim = "iss";
 
       Dictionary<string, object> payload = GetPayload();
-      if (payload.ContainsKey("iss"))
+      if (payload.ContainsKey(issuerClaim))
       {
-        // ??? iss is missing from enum too :-S
-        result = payload["iss"] as string;
+        result = payload[issuerClaim] as string;
       }
 
       return result;

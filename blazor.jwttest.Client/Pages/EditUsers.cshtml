@@ -1,6 +1,7 @@
 ﻿@using Microsoft.AspNetCore.Blazor.Services
 @using blazor.jwttest.Shared
 @using blazor.jwttest.Client.Classes
+@using blazor.jwttest.Client.Exceptions
 
 @inject HttpClient Http
 @inject IUriHelper UriHelper
@@ -57,10 +58,30 @@ else
         UriHelper.NavigateTo("/error403");
         return;
       }
+      return;
     }
 
     // If we get here we're allowed to access this page
-    users = await Http.GetJsonAsync<User[]>("api/users/all");
+    try
+    {
+      users = await Http.GetJsonAsync<User[]>("api/users/all");
+    }
+    catch (HttpUnauthorizedException)
+    {
+      UriHelper.NavigateTo("/error401");
+      return;
+    }
+    catch (HttpForbiddenException)
+    {
+      UriHelper.NavigateTo("/error403");
+      return;
+    }
+    catch (HttpInternalServerErrorException)
+    {
+      UriHelper.NavigateTo("/error500");
+      return;
+    }
+
   }
 
 }

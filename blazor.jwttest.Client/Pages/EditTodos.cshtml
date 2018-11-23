@@ -1,6 +1,7 @@
 ﻿@using Microsoft.AspNetCore.Blazor.Services
 @using blazor.jwttest.Shared
 @using blazor.jwttest.Client.Classes
+@using blazor.jwttest.Client.Exceptions
 
 @inject HttpClient Http
 @inject IUriHelper UriHelper
@@ -46,38 +47,58 @@ else
 
 @functions {
 
-  Todo[] todos;
+Todo[] todos;
 
-  private readonly List<string> allowedRoles = new List<string>() { "todoedit" };
-  NavigationFailReason failReason = NavigationFailReason.Unknown;
+private readonly List<string> allowedRoles = new List<string>() { "todoedit", "useredit" };
+NavigationFailReason failReason = NavigationFailReason.Unknown;
 
-  protected override async Task OnInitAsync()
+protected override async Task OnInitAsync()
+{
+  // Routine to handle page navigation is in the ApplicationState class.  In Time I'll work out a better way of doing this
+  // but for now, it takes 2 required parameters and one optional.
+  //
+  // Required 1 : 'allowedRoles' - List<string> of roles required to access this page
+  // Required 2 : 'failReason' - member of enumeration NavigationFailReason used to communicate fail reason back to caller
+  //
+  // Optional 1 : 'notLoggedInRoute' - default empty string, if default left, will NOT redirect on not being logged in
+  //                                                         if default changed, will try to redirect to that route if not logged in
+  //
+  // Returns boolean - true = allowed to stay on this page, false = not allowed
+
+  if (!AppState.IsAllowedToNavigate(allowedRoles, out failReason, "/login"))
   {
-    // Routine to handle page navigation is in the ApplicationState class.  In Time I'll work out a better way of doing this
-    // but for now, it takes 2 required parameters and one optional.
-    //
-    // Required 1 : 'allowedRoles' - List<string> of roles required to access this page
-    // Required 2 : 'failReason' - member of enumeration NavigationFailReason used to communicate fail reason back to caller
-    //
-    // Optional 1 : 'notLoggedInRoute' - default empty string, if default left, will NOT redirect on not being logged in
-    //                                                         if default changed, will try to redirect to that route if not logged in
-    //
-    // Returns boolean - true = allowed to stay on this page, false = not allowed
-
-    if(!AppState.IsAllowedToNavigate(allowedRoles, out failReason, "/login"))
+    // In this example, if we are not logged in, we'll go straight to login route, otherwise we'll return false
+    // end up in this "if" with a fail reason of 'RoleNotAllowed'
+    if (failReason == NavigationFailReason.RoleNotAllowed)
     {
-      // In this example, if we are not logged in, we'll go straight to login route, otherwise we'll return false
-      // end up in this "if" with a fail reason of 'RoleNotAllowed'
-      if(failReason == NavigationFailReason.RoleNotAllowed)
-      {
-        UriHelper.NavigateTo("/error403");
-        return;
-      }
+      UriHelper.NavigateTo("/error403");
+      return;
     }
+    return;
+  }
 
-    // If we get here we're allowed to access this page
+  // If we get here we're allowed to access this page
+  try
+  {
     todos = await Http.GetJsonAsync<Todo[]>("api/todos/all");
   }
+  catch (HttpUnauthorizedException)
+  {
+    UriHelper.NavigateTo("/error401");
+    return;
+  }
+  catch (HttpForbiddenException)
+  {
+    UriHelper.NavigateTo("/error403");
+    return;
+  }
+  catch (HttpInternalServerErrorException)
+  {
+    UriHelper.NavigateTo("/error500");
+    return;
+  }
+
+}
 
 }
 

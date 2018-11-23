@@ -29,6 +29,24 @@
     </li>
     }
   </ul>
+
+  @if(AppState.IsLoggedIn)
+  {
+  <div class="text-white">
+    <p>Full Name : <span class="text-info">@AppState.FullName</span></p>
+    <p>Email : <span class="text-info">@AppState.Email</span></p>
+    <p>Login Name : <span class="text-info">@AppState.UserName</span></p>
+    <p>Roles : 
+      <ul>
+        @foreach(var role in AppState.UserRoles)
+        {
+          <li class="text-info">@role</li>
+        }
+      </ul>
+    </p>
+  </div>
+  }
+
 </div>
 
 @functions {

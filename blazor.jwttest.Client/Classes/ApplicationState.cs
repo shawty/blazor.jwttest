@@ -86,6 +86,7 @@ namespace blazor.jwttest.Client.Classes
     public async Task Logout()
     {
       await _localStorage.RemoveItem(AuthTokenName);
+      RemoveAuthorizationHeader();
 
       IsLoggedIn = false;
       UserName = FullName = Email = String.Empty;
@@ -141,6 +142,14 @@ namespace blazor.jwttest.Client.Classes
       {
         var token = await _localStorage.GetItem<string>(AuthTokenName);
         _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+      }
+    }
+
+    private void RemoveAuthorizationHeader()
+    {
+      if (_httpClient.DefaultRequestHeaders.Contains("Authorization"))
+      {
+        _httpClient.DefaultRequestHeaders.Remove("Authorization");
       }
     }
 
